@@ -3,8 +3,16 @@ import { HOME_POSTS_QUERY } from "@/sanity/lib/queries";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
 
-export const Blog = async () => {
-  const posts = await client.fetch(HOME_POSTS_QUERY);
+
+type Post = {
+  _id: string;
+  title: string;
+  slug?: { current: string };
+  mainImage?: any;
+  publishedAt: string;
+};
+
+export const Blog = ({ posts }: { posts: Post[] }) => {
 
   return (
     <section className="py-24 px-6">

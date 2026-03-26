@@ -6,8 +6,8 @@ export default function ContactPage() {
         Contact Us
       </h1>
 
-      <p className="text-white-600 mb-6">
-        We'd love to hear from you. Reach out anytime.
+      <p className="text-white/70 mb-6">
+        We&apos;d love to hear from you. Reach out anytime.
       </p>
 
       <div className="space-y-4 text-white">
@@ -15,7 +15,7 @@ export default function ContactPage() {
         <p><b>Phone:</b> +91-XXXXXXXXXX</p>
       </div>
 
-      <p className="mt-6 text-white-500">
+      <p className="mt-6 text-white/60">
         We usually respond within 24 hours.
       </p>
 

@@ -2,50 +2,66 @@
 
 import { useState } from "react";
 
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 export const Chatbot = () => {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
+    const userMessage: Message = {
+      role: "user",
+      content: input,
+    };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput(""); // ✅ clears input instantly
+    setInput("");
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ message: input }),
       });
 
       const data = await res.json();
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.reply },
-      ]);
+      const botMessage: Message = {
+        role: "assistant",
+        content: data.reply,
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Error getting response." },
-      ]);
+      const errorMessage: Message = {
+        role: "assistant",
+        content: "Error getting response.",
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
     }
   };
-
+  
   return (
     <div className="fixed bottom-6 right-10 z-50 flex flex-col items-end gap-2">
       {/* Chat Button */}
       {!open && (
         <div className="pointer-events-auto">
-        <button
-          onClick={() => setOpen(true)}
-          className="bg-brand-500 text-white p-4 rounded-full shadow-lg text-xl cursor-pointer hover:scale-110 transition"
-        >
-          Chat👍
-        </button>
+          <button
+            onClick={() => setOpen(true)}
+            className="bg-brand-500 text-white p-4 rounded-full shadow-lg text-xl cursor-pointer hover:scale-110 transition"
+          >
+            Chat👍
+          </button>
         </div>
       )}
 
@@ -55,7 +71,12 @@ export const Chatbot = () => {
           {/* Header */}
           <div className="p-4 border-b flex justify-between items-center font-medium">
             Nexus Assistant
-            <button onClick={() => setOpen(false)}  className="cursor-pointer text-lg" >✕</button>
+            <button
+              onClick={() => setOpen(false)}
+              className="cursor-pointer text-lg"
+            >
+              ✕
+            </button>
           </div>
 
           {/* Messages */}

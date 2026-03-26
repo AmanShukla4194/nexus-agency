@@ -13,30 +13,37 @@ export async function POST(req: Request) {
     const { message } = await req.json();
 
     // 🔥 Fetch your blog content
-    const posts = await client.fetch(`
-      *[_type == "post"]{
-        title,
-        body
-      }
-    `);
+    type Post = {
+      title: string;
+      body: any;
+    };
+
+    const posts: Post[] = await client.fetch(`
+  *[_type == "post"]{
+    title,
+    body
+  }
+`);
 
     // Convert blog content into text
     const context = posts
       .map((p: any) => `${p.title}: ${JSON.stringify(p.body)}`)
       .join("\n\n");
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [
-          {
-            role: "system",
-            content: `
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [
+            {
+              role: "system",
+              content: `
 You are an AI assistant for Nexus Agency.
 
 Services:
@@ -58,22 +65,22 @@ Rules:
 - Be professional and helpful
 - Promote services when relevant
 `,
-          },
-          {
-            role: "user",
-            content: message,
-          },
-        ],
-      }),
-    });
+            },
+            {
+              role: "user",
+              content: message,
+            },
+          ],
+        }),
+      },
+    );
 
     const data = await response.json();
 
     return NextResponse.json({
       reply: data.choices?.[0]?.message?.content || "No response",
     });
-
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({
       reply: "Error processing request",
     });
