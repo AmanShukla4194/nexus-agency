@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Tailwind v4 config inside CSS */
+@theme {
+  --color-brand-500: #4f6ef7;
+  --color-dark-900: #09090b;
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-syne);
+}
